@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head> 
+  <meta charset="UTF-8">
+  <title>Text-to-Speech App</title>
+  <!-- Tailwind CSS CDN -->
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 py-8">
+    <section>
+        <div class="flex justify-between w-[100%]">
+            <div class="text-2xl font-bold mb-4">
+                <h1>wideo</h1>
+            </div>
+                <div class="flex justify-center py-20 md:py-0">
+                    <ul class="flex flex-col md:flex-row gap-2 md:gap-5 items-center ">
+                        <li> <a class="py-4 px-3 hover:border-b-2 border-black uppercase"href="#">templates</a></li>
+                        <li> <a class="py-4 px-3 hover:border-b-2 border-black uppercase"href="#">explore <select>
+                        </select></a></li>
+                        <li> <a class="py-4 px-3 hover:border-b-2 border-black uppercase"href="#">product<select>
+                        </select></a></li>
+                        <li> <a class="py-4 px-3 hover:border-b-2 border-black uppercase"href="#">enterprise<select>
+                        </select></a></li>
+                        <li> <a class="py-4 px-3 hover:border-b-2 border-black uppercase"href="#">pricing <select>
+                        </select></a></li>
+                        <li> <a class="py-4 px-3 hover:border-b-2 border-black uppercase"href="#">sign in <select>
+                        </select></a></li>
+                        <li> <a class="py-4 px-3 hover:border-b-2 border-black uppercase"href="#">sign up<select>
+                        </select></a></li>
+                       
+                            
+                    </ul>
+                </div>
+        </div>
+    </section>
+<div class="flex  md:flex-row sm:flex-col">
+        <div class="max-w-md mx-auto bg-white p-6 rounded-md shadow-md">
+            <h1 class="text-2xl font-bold mb-4 text-center">Text-to-Speech App</h1>
+            <textarea id="inputText" class="w-full h-[25px] px-3 py-2 border rounded-md mb-4" placeholder="Enter text"></textarea>
+            <div class="flex flex-col justify-between items-center mb-4">
+              <div class="w-full">
+                <label for="voiceSelect" class="block text-sm font-semibold">Select Voice</label>
+                <select id="voiceSelect" class="w-full mt-1 p-2 border rounded">
+                  <!-- Options will be populated dynamically via JavaScript -->
+                </select>
+              </div>
+              <div class="w-full">
+                <label for="speedRange" class="block text-sm font-semibold">Speed</label>
+                <input id="speedRange" type="range" min="0.1" max="10" step="0.1" value="1" class="w-full mt-1 p-2 border rounded">
+              </div>
+              <div class="flex flex-row justify-between w-full">
+                   <div class="mb-4 w-1/2">
+                       <div id="preview" class="border rounded-full  w-[50%] h-[25px] "><h2 class="text-lg font-semibold py-1 px-20 text-center uppercase mb-2">Preview</h2></div>
+                   </div>
+                   <div class="w-1/2 mb-4">
+                       <button id="speakButton" class="border rounded-full  w-[50%] h-[25px] bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-20 "></h2 class="text-lg font-semibold py-2 px-20 text-center mb-2">play</h2></button>
+                   </div>
+              </div>
+              <div class="w-full">
+                <a id="downloadLink" href="#" download="speech.mp3" class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 border rounded-full  mt-2 block text-center uppercase">Download mp3</a>
+              </div>
+            </div>
+           
+        </div>
+      <div class="w-full p-20">
+           <div class=" w-1/2">
+               <h1 class="text-lg font-semibold ">Free Text to Speech <br> Software(TTS)</h1>
+           </div>
+           <div class="">
+               <h4>An easy way to convert text to voice that's fast and straightforward-it'll make your message more catchy and inclusive</h4>
+           </div>
+    
+    </div>
+</div>
+
+  <!-- JavaScript for Text-to-Speech -->
+  <script>
+    const speakButton = document.getElementById('speakButton');
+    const inputText = document.getElementById('inputText');
+    const voiceSelect = document.getElementById('voiceSelect');
+    const speedRange = document.getElementById('speedRange');
+    const preview = document.getElementById('preview');
+    const downloadLink = document.getElementById('downloadLink');
+
+    // Function to populate voices dropdown
+    function populateVoiceList() {
+      const voices = speechSynthesis.getVoices();
+      voiceSelect.innerHTML = voices
+        .map((voice, index) => `<option value="${index}">${voice.name} (${voice.lang})</option>`)
+        .join('');
+    }
+
+    // Populate voices dropdown when available
+    speechSynthesis.onvoiceschanged = populateVoiceList;
+
+    speakButton.addEventListener('click', () => {
+      const text = inputText.value.trim();
+      if (text !== '') {
+        const speech = new SpeechSynthesisUtterance(text);
+        const selectedVoice = voiceSelect.value;
+        speech.voice = speechSynthesis.getVoices()[selectedVoice];
+        speech.rate = parseFloat(speedRange.value);
+        speech.volume = 1; // 0 to 1
+        speech.pitch = 1; // 0 to 2
+
+        speechSynthesis.speak(speech);
+
+        // Update preview
+        preview.textContent = text;
+
+        // Create downloadable speech
+        const audioBlob = new Blob([text], { type: 'audio/mpeg' });
+        downloadLink.href = URL.createObjectURL(audioBlob);
+      }
+    });
+
+    speedRange.addEventListener('input', () => {
+      const speedValue = speedRange.value;
+      preview.textContent = inputText.value.trim();
+      preview.style.transition = 'transform 0.1s linear';
+      preview.style.transform = `translateX(-${speedValue * 5}px)`;
+    });
+  </script>
+</body>
+</html>
